@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAuthenticateController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Instructor\InstructorController;
@@ -32,9 +33,14 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 
-Route::middleware(['auth', 'role:admin'])->group(function (){
-    Route::controller(AdminController::class)->prefix('admin')->group(function (){
+Route::prefix('admin')->group(function (){
+    Route::controller(AdminAuthenticateController::class)->group(function (){
+             Route::get('login', 'login')->name('admin.auth.login');
+    });
+
+    Route::controller(AdminController::class)->middleware(['auth', 'role:admin'])->group(function (){
         Route::get('dashboard', 'dashboard')->name('admin.view.dashboard');
+        Route::get('logout', 'logout')->name('admin.logout');
     });
 });
 Route::middleware(['auth', 'role:instructor'])->group(function (){
